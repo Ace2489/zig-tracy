@@ -75,7 +75,7 @@ pub inline fn printAppInfo(comptime fmt: []const u8, args: anytype) void {
     c.___tracy_emit_message_appinfo(string.ptr, string.len);
 }
 
-pub inline fn message(comptime fmt: []const u8, args: anytype) void {
+pub inline fn print(comptime fmt: []const u8, args: anytype) void {
     if (!options.tracy_enable) return;
     const depth = options.tracy_callstack orelse 0;
 
@@ -134,7 +134,7 @@ pub const ZoneOptions = struct {
 pub const ZoneContext = struct {
     ctx: if (options.tracy_enable) c.___tracy_c_zone_context else void,
 
-    pub inline fn end(zone: ZoneContext) void {
+    pub inline fn deinit(zone: ZoneContext) void {
         if (!options.tracy_enable) return;
         c.___tracy_emit_zone_end(zone.ctx);
     }
@@ -162,7 +162,7 @@ pub const ZoneContext = struct {
     }
 };
 
-pub inline fn beginZone(comptime src: std.builtin.SourceLocation, opts: ZoneOptions) ZoneContext {
+pub inline fn initZone(comptime src: std.builtin.SourceLocation, opts: ZoneOptions) ZoneContext {
     if (!options.tracy_enable) return .{ .ctx = void{} };
     const active: c_int = @intFromBool(opts.active);
 
